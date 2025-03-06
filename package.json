@@ -13,15 +13,20 @@
     "start:all": "concurrently \"npm run start:server\" \"npm run dev\""
   },
   "dependencies": {
+    "@types/mathjax": "^0.0.40",
     "axios": "^1.7.9",
     "body-parser": "^1.20.3",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
+    "lucide-react": "^0.344.0",
+    "mathjax": "^3.2.2",
+    "mathjax-react": "^2.0.1",
+    "mathlive": "^0.104.0",
     "openai": "^4.85.2",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "lucide-react": "^0.344.0",
+    "react-mathjax2": "^0.0.2",
     "transformers": "^3.1.0"
   },
   "devDependencies": {

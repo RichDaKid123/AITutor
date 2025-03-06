@@ -44,8 +44,43 @@ app.post('/chat', async (req, res) => {
   }
 });
 
+// Add this with your other routes
+app.post('/stop-server', (req, res) => {
+  res.send('Server stopping...');
+  stopServer();
+});
+
+let server;
+
 // Start the server
-const PORT = process.env.PORT || 5175;
-app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
+function startServer(port) {
+  server = app.listen(port, () => {
+    console.log(`Server is running on port ${port}`);
+  });
+}
+
+// Stop the server
+function stopServer() {
+  if (server) {
+    server.close(() => {
+      console.log('Server stopped');
+    });
+  }
+}
+
+// Example usage:
+startServer(5175);
+
+// To stop later:
+// stopServer();
+
+// Handle graceful shutdown
+process.on('SIGTERM', () => {
+  console.log('SIGTERM received. Shutting down gracefully.');
+  stopServer();
+});
+
+process.on('SIGINT', () => {
+  console.log('SIGINT received. Shutting down gracefully.');
+  stopServer();
 });
