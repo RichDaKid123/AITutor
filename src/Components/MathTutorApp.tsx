@@ -1,27 +1,35 @@
 import React, { useState } from "react";
 import Sidebar from "./SideBar";
 import Whiteboard from "./Whiteboard";
+import { MathTutorAppProps } from "../types/interfaces";
 
-const MathTutorApp = () => {
+const MathTutorApp: React.FC<MathTutorAppProps> = () => {
   const [prompt, setPrompt] = useState("");
   const [response, setResponse] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [width, setWidth] = useState("1.5rem");
+  const [width, setWidth] = useState("16");
+
+  const fontSize = (response: string) => {
+    const calculatedWidth = Math.max(32 - response.length * 0.5, 20); 
+    setWidth(calculatedWidth);  // Update width state with the calculated font size
+  };
+  
 
   const specialInstructions =
-    "Provide a clear, step-by-step equation-solving process for the following problem. Do not include any text explanations—only show the equation at each step. Use the | symbol to separate each step. Make sure to state the final solution";
+    "Provide a clear, step-by-step equation-solving process in proper LaTeX format for the following problem. " +
+    "Do not include any words, explanations, or descriptions—only mathematical expressions using valid LaTeX notation. " +
+    "Separate each step with the | symbol. Always use at a minumum two steps. " +
+    "Wrap each equation in double dollar signs ($$) to ensure correct rendering. " +
+    "Ensure all exponents, fractions, and mathematical operations follow proper LaTeX syntax. " +
+    "Be extremely detailed and make sure you document each change, whether big or small, as a step.";
 
   const parseResponse = (response: string) => {
-    const lines = response.split("|").map((line) => line.trim()).filter(Boolean);
-    const maxLength = Math.max(...lines.map(line => line.length));
-    if (maxLength < 20) {
-      setWidth("2.5rem");
-    } else if (maxLength < 40) {
-      setWidth("2rem");
-    } else {
-      setWidth("1.5rem");
-    }
+    const lines = response
+      .split("|")
+      .map((line) => line.trim().replace(/\$\$/g, "")) // Remove $$ before rendering
+      .filter(Boolean);
+
     setResponse(lines);
   };
 
@@ -57,7 +65,9 @@ const MathTutorApp = () => {
         throw new Error(data.error);
       }
 
-      parseResponse(data.response);
+      console.log("API Response:", data.response); // Debugging
+      fontSize(data.response); // Calculate and set font size based on the response length
+      parseResponse(data.response); // Parse and display the response
     } catch (error: any) {
       console.error("Error:", error);
       setError(`Error: ${error.message}`);
